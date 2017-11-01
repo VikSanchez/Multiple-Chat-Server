@@ -19,3 +19,14 @@ def join():
 	conn_msg += "CLIENT_NAME:".encode('utf-8') + Cname.encode('utf-8') + "\n".encode('utf-8')
 
 	s.send(conn_msg)
+	
+def chat():
+	left
+
+def leave():
+	
+	conn_msg = "LEAVE_CHATROOM:".encode('utf-8')
+	conn_msg += "JOIN_ID".encode('utf-8') + str(clThread.uid).encode('utf-8')
+	
+
+	s.send(conn_msg)
