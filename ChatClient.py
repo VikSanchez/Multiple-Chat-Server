@@ -9,52 +9,13 @@ Created on Sat Oct  7 16:47:37 2017
 # chat_client.py
 
 import sys, socket, select
- 
-def chat_client():
-    if(len(sys.argv) < 3) :
-        print ('Usage : python chat_client.py hostname port')
-        sys.exit()
 
-    host = sys.argv[1]
-    port = int(sys.argv[2])
-     
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-     
-    # connect to remote host
-    try :
-        s.connect((host, port))
-    except :
-        print ('Unable to connect')
-        sys.exit()
-     
-    print ('Connected to remote host. You can start sending messages')
-    sys.stdout.write('[Me] : '); sys.stdout.flush()
-     
-    while 1:
-        socket_list = [sys.stdin, s]
-         
-        # Get the list sockets which are readable
-        read_sockets, write_sockets, error_sockets = select.select(socket_list , [], [])
-         
-        for sock in read_sockets:            
-            if sock == s:
-                # incoming message from remote server, s
-                data = sock.recv(4096)
-                if not data :
-                    print ('\nDisconnected from chat server')
-                    sys.exit()
-                else :
-                    #print data
-                    sys.stdout.write(data)
-                    sys.stdout.write('[Me] '); sys.stdout.flush()     
-            
-            else :
-                # user entered a message
-                msg = sys.stdin.readline()
-                s.send(msg)
-                sys.stdout.write('[Me] '); sys.stdout.flush() 
+def join():
+	chatroom = input('Enter Chatroom name to enter')
 
-if __name__ == "__main__":
+	conn_msg = "JOIN_CHATROOM:".encode('utf-8') + chatroom.encode('utf-8') + "\n".encode('utf-8')
+	conn_msg += "CLIENT IP: \n".encode('utf-8')
+	conn_msg += "PORT: \n".encode('utf-8')
+	conn_msg += "CLIENT_NAME:".encode('utf-8') + Cname.encode('utf-8') + "\n".encode('utf-8')
 
-    sys.exit(chat_client())
+	s.send(conn_msg)
