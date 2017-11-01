@@ -11,7 +11,7 @@ Created on Sat Oct  7 16:45:17 2017
 import sys, socket, select
 
 def check_msg(msg):
-	print('Checking')
+	print('Checking for your connection')
 	if (msg.find('JOIN_CHATROOM'.encode('utf-8'))+1):
 		return(1)	
 	elif (msg.find('LEAVE_CHATROOM'.encode('utf-8'))+1):
