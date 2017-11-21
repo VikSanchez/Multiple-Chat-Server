@@ -39,4 +39,37 @@ valid_disconnect_msg = r"DISCONNECT: ?(.*)(?:\s|\\n)PORT: ?(.*)(?:\s|\\n)CLIENT_
 error_code_1 = "Invalid Message Format... Please write the correct format"
 error_code_2 = "No Chat room exists with the Chat Room Ref-"
 
+def process_message(conn, addr):
+ while conn:
+  message = ""
+            # Looping through messages and storing in the string
+            while "\n\n" not in message:
+                message_content = conn.recv(1024)
+                message += message_content.decode()
+                if len(message_content) < 1024:
+                    break
+            # Check if message string have some data or not
+            if len(message) > 0:
+                print "MESSAGE FROM CLIENT->", message
+
+                #  Check the type of message and process them accordingly
+                if message == "KILL_SERVICE\n":
+                    os._exit(0)
+
+                if message.startswith("HELO"):
+                    process_hello_msg(conn, message, addr)
+
+                if message.startswith("JOIN_CHATROOM"):
+                    process_join_msg(conn, message)
+
+                if message.startswith("LEAVE_CHATROOM"):
+                    process_leave_msg(conn, message)
+
+                if message.startswith("CHAT"):
+                    process_chat_msg(conn, message)
+
+                if message.startswith("DISCONNECT"):
+                    process_disconnect_msg(conn, message)
+                    conn.shutdown(1)
+                    conn.close()
 
