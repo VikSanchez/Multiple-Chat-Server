@@ -61,3 +61,18 @@ class Chatroom:
         for dest_user, dest_conn in user_conns:
             self.send_msg_to_client("CHAT:" + str(self.chat_room_id) + "\nCLIENT_NAME:" + str(source_user) + "\nMESSAGE:" + msg + "\n",
                 dest_conn)
+    def remove_user_from_chat_room(self, chat_user_id, chat_user_name, conn):
+
+        # Lock the flow to enable sync between threads
+        self.chat_room_lock.acquire()
+        try:
+            # remove the UserID from the list of users in the chat room if exits
+            if chat_user_id in self.chat_room_users:
+                if self.chat_room_users[chat_user_id][0] == chat_user_name:
+                    del self.chat_room_users[chat_user_id]
+                else:
+                    #  If user does not exist then broadcast error message
+                    self.send_error_msg_to_client("the username " + chat_user_name + " does not exists", 3, conn)
+                    return
+        finally:
+            self.chat_room_lock.release()
