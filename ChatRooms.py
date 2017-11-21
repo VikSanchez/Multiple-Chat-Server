@@ -19,3 +19,29 @@ class Chatroom:
         self.chat_room_id = chat_room_id
         self.chat_room_users = {}
         self.chat_room_lock = Lock()
+        
+    def add_user_to_chat_room(self, conn, port, host, chat_user_id, chat_user_name):
+        """this function adds user to a chat room
+
+            Args:
+                conn: the connection parameter acting as a link b/w client and server
+                port: the port of the connection
+                host: host ip of the connection
+                chat_user_id: id associated to a particular user
+                chat_user_name: name associated with each user
+
+        """
+
+        # Lock the flow to enable sync between threads
+        self.chat_room_lock.acquire()
+        try:
+            # Adding details of the user w.r.t user id
+            self.chat_room_users[chat_user_id] = (chat_user_name, conn)
+            print len(self.chat_room_users), self.chat_room_users
+        finally:
+            # Releasing the lock
+            self.chat_room_lock.release()
+
+        #  Returning the response after addition is complete
+        return "JOINED_CHATROOM: " + self.chat_room_name + "\nSERVER_IP: " + str(host) + "\nPORT: " + str(
+            port) + "\nROOM_REF: " + str(self.chat_room_id) + "\nJOIN_ID: " + str(chat_user_id)
