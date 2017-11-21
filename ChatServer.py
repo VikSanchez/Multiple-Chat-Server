@@ -80,3 +80,12 @@ def process_join_msg(conn, message):
         create_chat_room(conn, msg_components.groups()[0], msg_components.groups()[3])
     else:
         send_error_msg_to_client(error_code_1, 1, conn)
+      
+def process_hello_msg(conn, message, addr):
+
+    # Matching the HELO message with the valid HELO message template otherwise returns error
+    msg_components = regex.match(valid_hello_msg, message, regex.M)
+    if msg_components is not None:
+        send_msg_to_client("HELO " + msg_components.groups()[0] + "\nIP:" + str(host) + "\nPort:" + str(port) + "\nStudentID:" + "17310876", conn)
+    else:
+        send_error_msg_to_client(error_code_1, 1, conn)
