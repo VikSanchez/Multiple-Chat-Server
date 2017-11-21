@@ -45,3 +45,19 @@ class Chatroom:
         #  Returning the response after addition is complete
         return "JOINED_CHATROOM: " + self.chat_room_name + "\nSERVER_IP: " + str(host) + "\nPORT: " + str(
             port) + "\nROOM_REF: " + str(self.chat_room_id) + "\nJOIN_ID: " + str(chat_user_id)
+    
+    def send_chat_msg(self, source_user, msg):
+
+        #  Array that contains the connection details of all the users in chat room
+        user_conns = []
+        # Lock the flow to enable sync between threads
+        self.chat_room_lock.acquire()
+        try:
+            user_conns = self.chat_room_users.values()
+        finally:
+            self.chat_room_lock.release()
+        print user_conns
+        # Loop through all the user connections and send them the message
+        for dest_user, dest_conn in user_conns:
+            self.send_msg_to_client("CHAT:" + str(self.chat_room_id) + "\nCLIENT_NAME:" + str(source_user) + "\nMESSAGE:" + msg + "\n",
+                dest_conn)
