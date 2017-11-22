@@ -76,3 +76,22 @@ class Chatroom:
                     return
         finally:
             self.chat_room_lock.release()
+            
+    def disconnect_user_from_chat_room(self, chat_user_id, chat_user_name):
+        # acquire clients mutex to check if user in room
+        self.chat_room_lock.acquire()
+        try:
+            # check if client is member of room
+            if chat_user_id not in self.chat_room_users:
+                return
+        finally:
+            self.chat_room_lock.release()
+        # send disconnect message to all members in chatroom
+        self.send_chat_msg(chat_user_name, chat_user_name + " has left this chatroom.")
+        # acquire clients mutex to remove user from room
+        self.chat_room_lock.acquire()
+        try:
+            # delete from clients array
+            del self.chat_room_users[chat_user_id]
+        finally:
+            self.chat_room_lock.release()
