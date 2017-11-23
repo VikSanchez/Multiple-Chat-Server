@@ -113,7 +113,22 @@ def process_disconnect_msg(conn, message):
         disconnect_user_from_chatroom(conn, msg_components.groups()[2])
     else:
         send_error_msg_to_client(error_code_1, 1, conn)
- 
+ def disconnect_user_from_chatroom(conn, chat_user_name):
+    chat_user_id = str(int(hashlib.md5(chat_user_name).hexdigest(), 16))
+    rooms = []
+    print "Receieved: DISCONNECT from " + chat_user_name
+    # acquire chatrooms mutex to access global room data
+    rooms_lock.acquire()
+    try:
+        # cache list of all chatroom objects
+        rooms = chat_rooms_array.values()
+    finally:
+        rooms_lock.release()
+
+    rooms = sorted(rooms, key=lambda x: x.chat_room_name)
+    print(rooms)
+    for r in rooms:
+        r.disconnect_user_from_chat_room(chat_user_id, chat_user_name)
  
  def server_main():
     global port
