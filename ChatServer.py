@@ -105,3 +105,11 @@ def process_chat_msg(conn, message):
         broadcast_msg_chatroom_users(conn, msg_components.groups()[0], msg_components.groups()[1], msg_components.groups()[2], msg_components.groups()[3])
     else:
         send_error_msg_to_client(error_code_1, 1, conn)
+def process_disconnect_msg(conn, message):
+
+    # Matching the LEAVE message with the valid leave message template otherwise if false return error
+    msg_components = regex.match(valid_disconnect_msg, message, regex.M)
+    if msg_components is not None:
+        disconnect_user_from_chatroom(conn, msg_components.groups()[2])
+    else:
+        send_error_msg_to_client(error_code_1, 1, conn)
