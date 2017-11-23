@@ -95,3 +95,13 @@ class Chatroom:
             del self.chat_room_users[chat_user_id]
         finally:
             self.chat_room_lock.release()
+    def send_error_msg_to_client(self, err_desc, err_code, conn):
+        
+        print "SENDING ERROR-> Error Code:", str(err_code), "with description", err_desc
+        message = "ERROR_CODE: " + str(err_code) + "\nERROR_DESCRIPTION: " + err_desc
+        self.send_msg_to_client(message, conn)
+    def send_msg_to_client(self, message, conn):
+        
+        print "SENDING MESSAGE TO CLIENT->\n", message
+        if conn:
+            conn.sendall((message + "\n").encode())
