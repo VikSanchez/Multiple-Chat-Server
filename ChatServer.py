@@ -113,3 +113,27 @@ def process_disconnect_msg(conn, message):
         disconnect_user_from_chatroom(conn, msg_components.groups()[2])
     else:
         send_error_msg_to_client(error_code_1, 1, conn)
+ 
+ 
+ def server_main():
+    global port
+    port = 8000  # Port for connection
+    # Ipv4 Socket Family and TCP Sockets
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((host, port))  # Bind with port and host
+    s.listen(5)
+
+    # continuous loop to keep accepting client requests
+    while True:
+        # accepts a connection request
+        conn, address = s.accept()
+
+        # Initializing the client thread
+        ClientThread(clients)
+
+        # receive data and put request in queue
+        clients.put((conn, address))
+
+
+if __name__ == '__main__':
+    server_main()
