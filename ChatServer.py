@@ -129,6 +129,30 @@ def process_disconnect_msg(conn, message):
     print(rooms)
     for r in rooms:
         r.disconnect_user_from_chat_room(chat_user_id, chat_user_name)
+      
+def create_chat_room(conn, chat_room_name, chat_user_name):
+
+    # Connecting unique hashes to the chat room name and chat user name
+    chat_room_id = str(int(hashlib.md5(chat_room_name).hexdigest(), 16))
+    chat_user_id = str(int(hashlib.md5(chat_user_name).hexdigest(), 16))
+
+    # Lock this portion such that no other thread can interfere
+    rooms_lock.acquire()
+    try:
+        # Checking if chat room with ID exists otherwise create a new one
+        if chat_room_id not in chat_rooms_array:
+            chat_rooms_array[chat_room_id] = ChatRoom.Chatroom(chat_room_name, chat_room_id)
+        room = chat_rooms_array[chat_room_id]
+    finally:
+        # Release the lock so that other thread can interact
+        rooms_lock.release()
+
+    print "RECEIVED FROM CLIENT-> Join request to join chat room.", chat_room_name, "from the user ", chat_user_name
+    #  Send chat room details and response to the client
+    send_msg_to_client(room.add_user_to_chat_room(conn, port, host, chat_user_id, chat_user_name), conn)
+    #  Send message to all the users of the chat room that a new user joined
+    room.send_chat_msg(chat_user_name, chat_user_name + " joined the chat room")
+
  
  def server_main():
     global port
