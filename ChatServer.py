@@ -152,6 +152,30 @@ def create_chat_room(conn, chat_room_name, chat_user_name):
     send_msg_to_client(room.add_user_to_chat_room(conn, port, host, chat_user_id, chat_user_name), conn)
     #  Send message to all the users of the chat room that a new user joined
     room.send_chat_msg(chat_user_name, chat_user_name + " joined the chat room")
+    
+def delete_from_chat_room(conn, chat_room_id, chat_user_id, chat_user_name):
+
+    room = None
+
+    # Lock this portion such that no other thread can interfere
+    rooms_lock.acquire()
+    try:
+        # Checking if chat room with ID exists otherwise throw an error
+        if chat_room_id not in chat_rooms_array:
+            send_error_msg_to_client(error_code_1 + chat_room_id, 1, conn)
+            return
+        #  If exist fetch the details in the object
+        room = chat_rooms_array[chat_room_id]
+    finally:
+        # Release the lock so that other thread can interact
+        rooms_lock.release()
+
+    # Send response back to the client that leave process was successful
+    send_msg_to_client("LEFT_CHATROOM: " + str(chat_room_id) + "\nJOIN_ID: " + str(chat_user_id), conn)
+    #  Inform other users in the chat room that a particular user has left
+    room.send_chat_msg(chat_user_name, chat_user_name + " has left this chatroom.")
+    #  Remove user details from chat room
+    room.remove_user_from_chat_room(chat_user_id, chat_user_name, conn)
 
  
  def server_main():
