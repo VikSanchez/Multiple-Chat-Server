@@ -177,7 +177,19 @@ def delete_from_chat_room(conn, chat_room_id, chat_user_id, chat_user_name):
     #  Remove user details from chat room
     room.remove_user_from_chat_room(chat_user_id, chat_user_name, conn)
 
- 
+ def send_error_msg_to_client(err_desc, err_code, conn):
+
+
+    print "SENDING ERROR-> Error Code:", str(err_code), "with description", err_desc
+    message = "ERROR_CODE: " + str(err_code) + "\nERROR_DESCRIPTION: " + err_desc
+    send_msg_to_client(message, conn)
+
+
+def send_msg_to_client(message, conn):
+
+    print "SENDING MESSAGE TO CLIENT->\n", message
+    if conn:
+        conn.sendall((message + "\n").encode())
  def server_main():
     global port
     port = 8000  # Port for connection
